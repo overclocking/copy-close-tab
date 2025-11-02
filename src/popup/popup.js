@@ -1,7 +1,19 @@
+function copyToClipboard(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const domainInput = document.getElementById('domainInput');
     const searchButton = document.getElementById('searchButton');
     const tabList = document.getElementById('tabList');
+    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+    const selectedCount = document.getElementById('selectedCount');
+    const copyAndCloseButton = document.getElementById('copyAndCloseTabs');
     const closeSelectedButton = document.getElementById('closeSelectedTabs');
     const closeAllButton = document.getElementById('closeAllTabs');
 
@@ -56,15 +68,49 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCloseSelectedButton();
     }
 
-    function updateCloseSelectedButton() {
-        const selectedCount = document.querySelectorAll('#tabList input[type="checkbox"]:checked').length;
-        closeSelectedButton.disabled = selectedCount === 0;
+    function updateButtonsAndCount() {
+        const checkedBoxes = document.querySelectorAll('#tabList input[type="checkbox"]:checked');
+        const checkedCount = checkedBoxes.length;
+        const totalCount = matchingTabs.length;
+        
+        selectedCount.textContent = totalCount > 0 ? `(${checkedCount}/${totalCount})` : '';
+        closeSelectedButton.disabled = checkedCount === 0;
+        copyAndCloseButton.disabled = checkedCount === 0;
+        selectAllCheckbox.checked = checkedCount === totalCount && totalCount > 0;
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).catch(err => {
+            console.error('클립보드 복사 실패:', err);
+        });
     }
 
     tabList.addEventListener('change', (e) => {
         if (e.target instanceof HTMLInputElement) {
-            updateCloseSelectedButton();
+            updateButtonsAndCount();
         }
+    });
+
+    selectAllCheckbox.addEventListener('change', () => {
+        const checkboxes = document.querySelectorAll('#tabList input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
+        });
+        updateButtonsAndCount();
+    });
+
+    copyAndCloseButton.addEventListener('click', async () => {
+        const selectedTabs = Array.from(document.querySelectorAll('#tabList input[type="checkbox"]:checked'))
+            .map(cb => matchingTabs.find(tab => tab.id === parseInt(cb.dataset.tabId)))
+            .filter(tab => tab != null);
+
+        const urls = selectedTabs.map(tab => tab.url).join('\r\n');
+        copyToClipboard(urls);
+
+        const tabIds = selectedTabs.map(tab => tab.id);
+        await chrome.tabs.remove(tabIds);
+        matchingTabs = matchingTabs.filter(tab => !tabIds.includes(tab.id));
+        renderTabs();
     });
 
     closeSelectedButton.addEventListener('click', async () => {

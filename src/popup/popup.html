@@ -12,9 +12,17 @@
             <button id="searchButton">검색</button>
         </div>
         <div class="results-section">
+            <div class="results-header">
+                <label class="select-all-container">
+                    <input type="checkbox" id="selectAllCheckbox">
+                    <span>전체 선택</span>
+                    <span id="selectedCount"></span>
+                </label>
+            </div>
             <ul id="tabList"></ul>
         </div>
         <div class="actions">
+            <button id="copyAndCloseTabs" disabled>선택한 URL 복사 후 닫기</button>
             <button id="closeSelectedTabs" disabled>선택한 탭 닫기</button>
             <button id="closeAllTabs" disabled>모든 탭 닫기</button>
         </div>
