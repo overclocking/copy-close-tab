@@ -67,3 +67,7 @@ Once the extension is loaded, click on the extension icon in the Chrome toolbar 
 ## License
 
 This project is licensed under the MIT License.
+=======
+# copy-close-tab
+Copy and Close Tab for EDGE, Chorme
+>>>>>>> 317dca69ea8812e4eeabd81c866ec08ccc8ebc07
