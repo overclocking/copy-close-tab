@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+
+# build
+dist/
+
+# logs
+*.log
+
+# Editor directories
+.vscode/
+.idea/
+
+# OS files
+Thumbs.db
+
+# TypeScript (if any leftover files)
+*.ts
+
+# coverage
+coverage/
+
+# temporary
+*.tmp
+.env
